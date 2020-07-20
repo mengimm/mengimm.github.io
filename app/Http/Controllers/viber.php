@@ -16,14 +16,25 @@ class viber extends Controller
     public $token='48380f53e9e7d686-355fd1effe2d68ee-c92301ccbfd6a9df';
     public $url='https://chatapi.viber.com/pa/set_webhook';
     public $url_send='https://chatapi.viber.com/pa/send_message';
-    public $host='https://01dc15e71e29.ngrok.io/api/bot';
+    public $host='https://9b3e5b74cd91.ngrok.io/api/bot';
 
-    public $choise_ad_buttons=[[
+    public $choise_ad_keyboard=
+    [
+        "min_api_version"=>7,
+        "type"=>"rich_media",
+        "tracking_data"=>"choise_ad",
+        "rich_media"=>[
+            "Type"=>"rich_media",
+            "ButtonsGroupColumns"=>6,
+            "ButtonsGroupRows"=>7,
+            "BgColor"=>"#FFFFFF",
+            "Buttons"=>[    
+    [
         "Columns"=>6,
         "Rows"=>6,
         "ActionType"=>"open-url",
         "ActionBody"=>"https://www.google.com",
-        "Image"=>"https://mengimm.github.io/type.png"
+        "Image"=>"https://mengimm.github.io/img/type.png"
      ],     
      [
         "Columns"=>3,
@@ -34,7 +45,7 @@ class viber extends Controller
         "TextSize"=>"large",
         "TextVAlign"=>"middle",
         "TextHAlign"=>"middle",
-        "Image"=>"https://mengimm.github.io/button.png"
+        "Image"=>"https://mengimm.github.io/img/button.png"
      ],
      [
         "Columns"=>3,
@@ -45,101 +56,152 @@ class viber extends Controller
         "TextSize"=>"large",
         "TextVAlign"=>"middle",
         "TextHAlign"=>"middle",
-        "Image"=>"https://mengimm.github.io/button.png"
-     ]];
+        "Image"=>"https://mengimm.github.io/img/button.png"
+     ]]]];
 
-     public $choise_type_buttons=[
-     [//квартира
-        "Columns"=>5,
-        "Rows"=>4,
-        "ActionType"=>"open-url",
-        "ActionBody"=>"https://www.google.com",
-        "Image"=>"https://mengimm.github.io/apartment.png"
-     ],     
-     [
-        "Columns"=>5,
-        "Rows"=>1,
-        "ActionType"=>"reply",
-        "ActionBody"=>"https://www.google.com",
-        "Text"=>"<font color=#ffffff>Квартира</font>",
-        "TextSize"=>"large",
-        "TextVAlign"=>"middle",
-        "TextHAlign"=>"middle",
-        "Image"=>"https://mengimm.github.io/button.png"
-     ],
-     [//гараж
-        "Columns"=>5,
-        "Rows"=>4,
-        "ActionType"=>"open-url",
-        "ActionBody"=>"https://www.google.com",
-        "Image"=>"https://mengimm.github.io/garage.png"
-     ],     
-     [
-        "Columns"=>5,
-        "Rows"=>1,
-        "ActionType"=>"reply",
-        "ActionBody"=>"https://www.google.com",
-        "Text"=>"<font color=#ffffff>Гараж</font>",
-        "TextSize"=>"large",
-        "TextVAlign"=>"middle",
-        "TextHAlign"=>"middle",
-        "Image"=>"https://mengimm.github.io/button.png"
-     ],
-     [//частный дом
-        "Columns"=>5,
-        "Rows"=>4,
-        "ActionType"=>"open-url",
-        "ActionBody"=>"https://www.google.com",
-        "Image"=>"https://mengimm.github.io/house.png"
-     ],     
-     [
-        "Columns"=>5,
-        "Rows"=>1,
-        "ActionType"=>"reply",
-        "ActionBody"=>"https://www.google.com",
-        "Text"=>"<font color=#ffffff>Частный дом</font>",
-        "TextSize"=>"large",
-        "TextVAlign"=>"middle",
-        "TextHAlign"=>"middle",
-        "Image"=>"https://mengimm.github.io/button.png"
-     ],
-     [//участок
-        "Columns"=>5,
-        "Rows"=>4,
-        "ActionType"=>"open-url",
-        "ActionBody"=>"https://www.google.com",
-        "Image"=>"https://mengimm.github.io/map.png"
-     ],     
-     [
-        "Columns"=>5,
-        "Rows"=>1,
-        "ActionType"=>"reply",
-        "ActionBody"=>"https://www.google.com",
-        "Text"=>"<font color=#ffffff>Участок</font>",
-        "TextSize"=>"large",
-        "TextVAlign"=>"middle",
-        "TextHAlign"=>"middle",
-        "Image"=>"https://mengimm.github.io/button.png"
-     ],
-     [//коммерческая
-        "Columns"=>5,
-        "Rows"=>4,
-        "ActionType"=>"open-url",
-        "ActionBody"=>"https://www.google.com",
-        "Image"=>"https://mengimm.github.io/moll.png"
-     ],     
-     [
-        "Columns"=>5,
-        "Rows"=>1,
-        "ActionType"=>"reply",
-        "ActionBody"=>"https://www.google.com",
-        "Text"=>"<font color=#ffffff>Коммерческая</font>",
-        "TextSize"=>"large",
-        "TextVAlign"=>"middle",
-        "TextHAlign"=>"middle",
-        "Image"=>"https://mengimm.github.io/button.png"
-     ]
+     public $choise_type_keyboard=[
+            "min_api_version"=>7,
+            "type"=>"rich_media",
+            "tracking_data"=>"choise_type",
+            "rich_media"=>[
+                "Type"=>"rich_media",
+                "ButtonsGroupColumns"=>5,
+                "ButtonsGroupRows"=>5,
+                "BgColor"=>"#FFFFFF",
+                "Buttons"=>[         
+                    [//квартира
+                        "Columns"=>5,
+                        "Rows"=>4,
+                        "ActionType"=>"none",
+                        "ActionBody"=>"appartment",
+                        "Image"=>"https://mengimm.github.io/img/apartment.png"
+                    ],     
+                    [
+                        "Columns"=>5,
+                        "Rows"=>1,
+                        "ActionType"=>"reply",
+                        "ActionBody"=>"appartment",
+                        "Silent"=>true,
+                        "Text"=>"<font color=#ffffff>Квартира</font>",
+                        "TextSize"=>"large",
+                        "TextVAlign"=>"middle",
+                        "TextHAlign"=>"middle",
+                        "Image"=>"https://mengimm.github.io/img/button.png"
+                    ],
+                    [//гараж
+                        "Columns"=>5,
+                        "Rows"=>4,
+                        "ActionType"=>"none",
+                        "ActionBody"=>"garage",
+                        "Image"=>"https://mengimm.github.io/img/garage.png"
+                    ],     
+                    [
+                        "Columns"=>5,
+                        "Rows"=>1,
+                        "ActionType"=>"reply",
+                        "ActionBody"=>"garage",
+                        "Silent"=>true,
+                        "Text"=>"<font color=#ffffff>Гараж</font>",
+                        "TextSize"=>"large",
+                        "TextVAlign"=>"middle",
+                        "TextHAlign"=>"middle",
+                        "Image"=>"https://mengimm.github.io/img/button.png"
+                    ],
+                    [//частный дом
+                        "Columns"=>5,
+                        "Rows"=>4,
+                        "ActionType"=>"none",
+                        "ActionBody"=>"house",
+                        "Image"=>"https://mengimm.github.io/img/house.png"
+                    ],     
+                    [
+                        "Columns"=>5,
+                        "Rows"=>1,
+                        "ActionType"=>"reply",
+                        "ActionBody"=>"house",
+                        "Silent"=>true,
+                        "Text"=>"<font color=#ffffff>Частный дом</font>",
+                        "TextSize"=>"large",
+                        "TextVAlign"=>"middle",
+                        "TextHAlign"=>"middle",
+                        "Image"=>"https://mengimm.github.io/img/button.png"
+                    ],
+                    [//участок
+                        "Columns"=>5,
+                        "Rows"=>4,
+                        "ActionType"=>"none",
+                        "ActionBody"=>"stead",
+                        "Image"=>"https://mengimm.github.io/img/map.png"
+                    ],     
+                    [
+                        "Columns"=>5,
+                        "Rows"=>1,
+                        "ActionType"=>"reply",
+                        "ActionBody"=>"stead",
+                        "Silent"=>true,
+                        "Text"=>"<font color=#ffffff>Участок</font>",
+                        "TextSize"=>"large",
+                        "TextVAlign"=>"middle",
+                        "TextHAlign"=>"middle",
+                        "Image"=>"https://mengimm.github.io/img/button.png"
+                    ],
+                    [//коммерческая
+                        "Columns"=>5,
+                        "Rows"=>4,
+                        "ActionType"=>"none",
+                        "ActionBody"=>"commercial",
+                        "Image"=>"https://mengimm.github.io/img/moll.png"
+                    ],     
+                    [
+                        "Columns"=>5,
+                        "Rows"=>1,
+                        "ActionType"=>"reply",
+                        "ActionBody"=>"commercial",
+                        "Silent"=>true,
+                        "Text"=>"<font color=#ffffff>Коммерческая</font>",
+                        "TextSize"=>"large",
+                        "TextVAlign"=>"middle",
+                        "TextHAlign"=>"middle",
+                        "Image"=>"https://mengimm.github.io/img/button.png"
+                    ]
+                ]]
     ];
+/*
+    [
+        "receiver":"01234567890A=",
+        "type"=>"text",
+        "text"=>"Hello world",
+        "keyboard"=>[
+           "Type"=>"keyboard",
+           "DefaultHeight"=>true,
+           "Buttons"=>[
+              [
+                 "ActionType"=>"location-picker",
+                 "ActionBody"=>"loc",
+                 "Text"=>"Key text",
+                 "TextSize"=>"regular"
+              ]
+           ]
+        ]
+     ]
+*/
+    public $send_location=[        
+        "type"=>"text",
+        "min_api_version"=>7,
+        "text"=>"Hello world",
+        "keyboard"=>[
+           "Type"=>"keyboard",
+           "DefaultHeight"=>true,
+           "Buttons"=>[
+              [
+                 "ActionType"=>"location-picker",
+                 "ActionBody"=>"loc",
+                 "Text"=>"Key text",
+                 "TextSize"=>"regular"
+              ]
+           ]
+        ]
+     ];
 
     public function get_vheaders(){
         return ['X-Viber-Auth-Token' => $this->token, 'Content-Type' => 'multipart/form-data' ];
@@ -179,6 +241,7 @@ class viber extends Controller
         //$e=1;
         $content=$request->all();        
         if ($content["event"]=="message"){
+            //tracking_data='choise_type'
             $vuser=$this->get_vuser($content);
             $id=$content["sender"]["id"];
             $text=$content["message"]["text"];            
@@ -245,25 +308,8 @@ class viber extends Controller
         $text="type";
         $client= new GuzzleHttp\Client();
 
-        $body=[
-            "receiver"=>$id,
-            "min_api_version"=>3,
-            "type"=>"rich_media",
-            "rich_media"=>[
-                "Type"=>"rich_media",
-                "ButtonsGroupColumns"=>5,
-                "ButtonsGroupRows"=>5,
-                "BgColor"=>"#FFFFFF",
-                "Buttons"=>$this->choise_type_buttons                
-         ]
-//            "sender"=>[
-//                "name"=>"John McClane"
-//            ],
-               
-               //"avatar":"http://avatar.example.com"
-            //},
-            //"tracking_data"=>"tracking data",            
-        ];
+        $body=$this->send_location;
+        $body["receiver"]=$id;        
         $res=$client->request('POST',$this->url_send,['headers' => $this->get_vheaders(), GuzzleHttp\RequestOptions::JSON => $body]);
         $b=$res->getBody();
         return $b;

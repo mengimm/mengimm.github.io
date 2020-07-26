@@ -40,7 +40,7 @@ class viber extends Controller
         "Columns"=>3,
         "Rows"=>1,
         "ActionType"=>"reply",
-        "ActionBody"=>"https://www.google.com",
+        "ActionBody"=>"1",
         "Text"=>"<font color=#ffffff>Аренда</font>",
         "TextSize"=>"large",
         "TextVAlign"=>"middle",
@@ -51,7 +51,7 @@ class viber extends Controller
         "Columns"=>3,
         "Rows"=>1,
         "ActionType"=>"reply",
-        "ActionBody"=>"https://www.google.com",
+        "ActionBody"=>"2",
         "Text"=>"<font color=#ffffff>Продажа</font>",
         "TextSize"=>"large",
         "TextVAlign"=>"middle",
@@ -73,14 +73,14 @@ class viber extends Controller
                         "Columns"=>5,
                         "Rows"=>4,
                         "ActionType"=>"none",
-                        "ActionBody"=>"appartment",
+                        "ActionBody"=>"1",
                         "Image"=>"https://mengimm.github.io/img/apartment.png"
                     ],     
                     [
                         "Columns"=>5,
                         "Rows"=>1,
                         "ActionType"=>"reply",
-                        "ActionBody"=>"appartment",
+                        "ActionBody"=>"1",
                         "Silent"=>true,
                         "Text"=>"<font color=#ffffff>Квартира</font>",
                         "TextSize"=>"large",
@@ -92,14 +92,14 @@ class viber extends Controller
                         "Columns"=>5,
                         "Rows"=>4,
                         "ActionType"=>"none",
-                        "ActionBody"=>"garage",
+                        "ActionBody"=>"2",
                         "Image"=>"https://mengimm.github.io/img/garage.png"
                     ],     
                     [
                         "Columns"=>5,
                         "Rows"=>1,
                         "ActionType"=>"reply",
-                        "ActionBody"=>"garage",
+                        "ActionBody"=>"2",
                         "Silent"=>true,
                         "Text"=>"<font color=#ffffff>Гараж</font>",
                         "TextSize"=>"large",
@@ -111,14 +111,14 @@ class viber extends Controller
                         "Columns"=>5,
                         "Rows"=>4,
                         "ActionType"=>"none",
-                        "ActionBody"=>"house",
+                        "ActionBody"=>"3",
                         "Image"=>"https://mengimm.github.io/img/house.png"
                     ],     
                     [
                         "Columns"=>5,
                         "Rows"=>1,
                         "ActionType"=>"reply",
-                        "ActionBody"=>"house",
+                        "ActionBody"=>"3",
                         "Silent"=>true,
                         "Text"=>"<font color=#ffffff>Частный дом</font>",
                         "TextSize"=>"large",
@@ -130,14 +130,14 @@ class viber extends Controller
                         "Columns"=>5,
                         "Rows"=>4,
                         "ActionType"=>"none",
-                        "ActionBody"=>"stead",
+                        "ActionBody"=>"4",
                         "Image"=>"https://mengimm.github.io/img/map.png"
                     ],     
                     [
                         "Columns"=>5,
                         "Rows"=>1,
                         "ActionType"=>"reply",
-                        "ActionBody"=>"stead",
+                        "ActionBody"=>"4",
                         "Silent"=>true,
                         "Text"=>"<font color=#ffffff>Участок</font>",
                         "TextSize"=>"large",
@@ -149,14 +149,14 @@ class viber extends Controller
                         "Columns"=>5,
                         "Rows"=>4,
                         "ActionType"=>"none",
-                        "ActionBody"=>"commercial",
+                        "ActionBody"=>"5",
                         "Image"=>"https://mengimm.github.io/img/moll.png"
                     ],     
                     [
                         "Columns"=>5,
                         "Rows"=>1,
                         "ActionType"=>"reply",
-                        "ActionBody"=>"commercial",
+                        "ActionBody"=>"5",
                         "Silent"=>true,
                         "Text"=>"<font color=#ffffff>Коммерческая</font>",
                         "TextSize"=>"large",
@@ -238,33 +238,82 @@ class viber extends Controller
     }
 
     public function bot(Request $request){
-        //$e=1;
-        $content=$request->all();        
-        if ($content["event"]=="message"){
-            //tracking_data='choise_type'
+        $content=$request->all();
+        //обрабатываем тип "сообщение"
+        if ($content["event"]=="message"){            
+            $sender=$content["sender"]["id"];
             $vuser=$this->get_vuser($content);
-            $id=$content["sender"]["id"];
-            $text=$content["message"]["text"];            
-            
-            $this->edit_ad($vuser,$text);
+            $td=$content['tracking_data'];
+            //if ($td=='')
+            $array=['ins_ad','read_ad','ins_rent','ins_sale','read_rent','read_sale'];
+            //если трекинг дата подача объявлений
+            if (in_array($td,['ins_ad','choise_ad','choise_type','price','foto','description','publish'])){
+                $ad=$vuser->get_edit_ad();
+                $kb=$this->edit_ad($ad,$content);                
+                $this->send_keyboard($sender,$kb);
+            //если трекинг дата получение объявлений
+            }elseif(in_array($td,['get_ad','find_choise_ad','find_choise_type'])){
+                $f=$vuser->get_findprop();
+                $kb=$this->set_read_prop($f,$content);
+                $this->send_keyboard($sender,$kb);
+            }elseif($td=='page_'){
+                $this->get_ad($vuser,$td);
+            }
+            //$text=$content["message"]["text"];                        
         }
         return response()->json(['Success','viber bot'], 200);
     }
 
-    public function edit_ad($vuser,$text){
-        $a=$vuser->get_edit_ad();
-        $prestr=['descr_','price_'];
-        foreach($prestr as $p){
-            if (strpos($text,$p)==1){
-                $a->description=substr($text,strlen($p)+1);
+    public function edit_ad($ad,$content){
+        //$a=$vuser->get_edit_ad();
+        $id=$content['message']['id'];
+        $id="NAI5XANdAmJLb0oeJ7gIaA==";
+
+        $td=$content['tracking_data'];
+        if ($td=='choise_ad'){
+            $ad->type=$td=$content['message']['text'];
+            $kb=$this->send_location;
+        }elseif($td=='choise_type'){
+            $ad->prop_type=$td=$content['message']['text'];
+            $kb=$this->send_location;
+        }elseif($td=='price'){
+            $ad->price=$td=$content['message']['text'];
+            $kb=$this->send_location;
+        }elseif($td=='foto'){
+            $ad->photos=$td=$content['message']['text'];
+            $kb=$this->send_location;
+        }elseif($td=='description'){
+            $ad->description=$td=$content['message']['text'];
+            $kb=$this->send_location;
+        }elseif($td=='publish'){
+            if ($content['message']['text']=='1'){
+                $ad->status=1;
+                $kb=$this->send_location;
             }
-        }
-        
-        $a->save();
-        return $a;
+    }                        
+        $ad->save();        
+        return $kb;
+    }
+
+    public function set_read_prop($f,$content){
+        //$a=$vuser->get_edit_ad();
+        $id=$content['message']['id'];
+        $id="NAI5XANdAmJLb0oeJ7gIaA==";
+
+        $td=$content['tracking_data'];
+        if ($td=='find_choise_ad'){
+            $f->type=$td=$content['message']['text'];
+            $kb=$this->send_location;
+        }elseif($td=='find_choise_type'){
+            $f->prop_type=$td=$content['message']['text'];
+            $kb=$this->send_location;
+        }                            
+        $f->save();
+        return $kb;
     }
 
     public function get_vuser($content){
+        
         $id=$content['sender']['id'];
         $u=Vuser::where('vid',$id)->first();
         if ($u==null){
@@ -275,6 +324,16 @@ class viber extends Controller
             $u->save();
         }
         return $u;
+    }
+
+    public function get_ad($vuser,$page){
+        $f=$vuser->get_findprop();
+
+        $ads=Ad::where('status',1)
+                ->where('type',$f->type)
+                ->where('prop_type',$f->prop_type)
+                ->paginate(5,['*'],'page',$page);                
+        return $ads;
     }
 
     public function send_msg($id,$text){
@@ -303,13 +362,14 @@ class viber extends Controller
         
     }
 
-    public function choise_type(){
-        $id="NAI5XANdAmJLb0oeJ7gIaA==";
-        $text="type";
+    public function send_keyboard($id,$kb){
+        //$id="NAI5XANdAmJLb0oeJ7gIaA==";
+        //$text="type";
         $client= new GuzzleHttp\Client();
 
-        $body=$this->send_location;
-        $body["receiver"]=$id;        
+        //$body=$this->send_location;
+        $body=$kb;
+        $body["receiver"]=$id;
         $res=$client->request('POST',$this->url_send,['headers' => $this->get_vheaders(), GuzzleHttp\RequestOptions::JSON => $body]);
         $b=$res->getBody();
         return $b;

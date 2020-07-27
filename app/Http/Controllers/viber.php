@@ -16,7 +16,7 @@ class viber extends Controller
     public $token='48380f53e9e7d686-355fd1effe2d68ee-c92301ccbfd6a9df';
     public $url='https://chatapi.viber.com/pa/set_webhook';
     public $url_send='https://chatapi.viber.com/pa/send_message';
-    public $host='https://dc28405bba08.ngrok.io/api/bot';
+    public $host='https://e4a953919304.ngrok.io/api/bot';
 
     public $action_keyboard=
     [
@@ -197,10 +197,21 @@ class viber extends Controller
 
      public $photo_keyboard=[
         "type"=>"text",
-        "text"=>"отправьте фото объекта",
-        "min_api_version"=>7,
-        "tracking_data"=>"photo",        
-     ];
+        "text"=>"отправьте до 5ти фотографий объекта или нажмите завершить если не хотите опубликовать фото",
+        "min_api_version"=>7,        
+        "tracking_data"=>"photo1",
+        "keyboard"=>[
+           "DefaultHeight"=>true,
+           "Buttons"=>[
+              [
+                 "ActionType"=>"reply",
+                 "ActionBody"=>"end_photo",
+                 "Text"=>"завершить",
+                 "TextSize"=>"regular"
+              ]
+           ]
+        ]
+     ];     
 
      public $publish_keyboard=
     [
@@ -268,18 +279,16 @@ class viber extends Controller
         return response()->json(["success"], 200);        
     }
 
-    public function bot(Request $request){
-        $content=$request->all();
-        //обрабатываем тип "сообщение"
-        
+    public function process($content){
+        $vuser=$this->get_vuser($content);
+
         if ($content["event"]=="subscribed"){
-            $sender=$content["user"]["id"];
             $vuser=$this->get_vuser($content);
+            $sender=$content["user"]["id"];            
             $this->send_keyboard($sender,$this->action_keyboard);
-        }
-        elseif ($content["event"]=="message"){            
-            $sender=$content["sender"]["id"];
-            $vuser=$this->get_vuser($content);
+            
+        }elseif ($content["event"]=="message"){            
+            $sender=$content["sender"]["id"];            
             $td=$content['message']['tracking_data'];
             //if ($td=='')
             $array=['ins_ad','read_ad','ins_rent','ins_sale','read_rent','read_sale'];
@@ -293,23 +302,39 @@ class viber extends Controller
                 $ad=$vuser->get_edit_ad();
                 $kb=$this->edit_ad($ad,$content);                
                 $this->send_keyboard($sender,$kb);
-            //если трекинг для подачи объявлений
-            }elseif (in_array($td,['type_ad','type_prop','location','price','photo','description','publish'])){
+                //если трекинг для подачи объявлений
+            }elseif (in_array($td,['type_ad','type_prop','location','price','photo1','photo2','photo3','photo4','photo5','description','publish'])){
                 $ad=$vuser->get_edit_ad();
                 $next_kb=$this->edit_ad($ad,$content);                
                 $res=$this->send_keyboard($sender,$next_kb);
-                $p=$res->getBody();
-            //если трекинг для получение объявлений
+                //$p=$res->getBody();
+                //если трекинг для получение объявлений
             }elseif(in_array($td,['get_ad','find_choise_ad','find_choise_type'])){
                 $f=$vuser->get_findprop();
                 $kb=$this->set_read_prop($f,$content);
                 $res=$this->send_keyboard($sender,$kb);
-                $p=$res->getBody();
+                //$p=$res->getBody();
             }elseif($td=='page_'){
                 $this->get_ad($vuser,$td);
             }
             //$text=$content["message"]["text"];                        
-        }
+        }        
+    }
+
+    public function bot(Request $request){
+        $content=$request->all();
+        $event=$content['event'];
+        //обрабатываем тип "сообщение"
+
+        if ($event=='webhook'){
+
+        }elseif(in_array($event,['subscribed','message'])){
+            $vuser=$this->get_vuser($content);
+            if ($vuser->msg_exists($content['message_token'],$content['timestamp'])==false){        
+                $this->process($content);
+            }
+
+        }                
         return response()->json(['Success','viber bot'], 200);
     }
 
@@ -326,25 +351,86 @@ class viber extends Controller
             $ad->prop_type=$content['message']['text'];
             $kb=$this->location_keyboard;
         }elseif($td=='location'){
-            //$ad->prop_type=$content['message']['text'];
+            $ad->lat=$content['message']['location']['lat'];
+            $ad->lon=$content['message']['location']['lon'];
             $kb=$this->price_keyboard;
         }elseif($td=='price'){
             $ad->price=$content['message']['text'];
             $kb=$this->photo_keyboard;
-        }elseif($td=='photo'){
-            $ad->photos=$content['message']['text'];
-            $kb=$this->description_keyboard;
+        }elseif(in_array($td,['photo1','photo2','photo3','photo4','photo5'])){
+            if ($content['message']['type']=='picture'){
+                $kb=$this->photo_keyboard;
+                if ($td=='photo1'){
+                    $ad->photo1=$content['message']['media'];
+                    $kb['tracking_data']='photo2';
+                    $kb['text']="отправьте еще фото объекта или нажмите завершить";
+                }elseif($td=='photo2'){
+                    $ad->photo2=$content['message']['media'];
+                    $kb['tracking_data']='photo3';
+                    $kb['text']="отправьте еще фото объекта или нажмите завершить";
+                }elseif($td=='photo3'){
+                    $ad->photo3=$content['message']['media'];
+                    $kb['tracking_data']='photo4';
+                    $kb['text']="отправьте еще фото объекта или нажмите завершить";
+                }elseif($td=='photo4'){
+                    $ad->photo4=$content['message']['media'];
+                    $kb['tracking_data']='photo5';
+                    $kb['text']="отправьте еще фото объекта или нажмите завершить";
+                }elseif($td=='photo5'){
+                    $ad->photo5=$content['message']['media'];
+                    $kb=$this->description_keyboard;
+                }                                
+            }else{
+                $kb=$this->description_keyboard;                
+            }                                  
         }elseif($td=='description'){
             $ad->description=$content['message']['text'];
             $kb=$this->publish_keyboard;
         }elseif($td=='publish'){
             if ($content['message']['text']=='1'){
                 $ad->status=1;
-                $kb=$this->send_location;
+                $ad->save();
+                $kb=$this->show_ad($content['sender']['id'],$ad);
             }
     }                        
         $ad->save();        
         return $kb;
+    }
+
+    public function show_ad($id,$ad){
+    $keyboard=
+    [
+        "min_api_version"=>7,        
+            "Type"=>"keyboard",
+            "DefaultHeight"=>true,
+            "BgColor"=>"#FFFFFF",
+            "tracking_data"=>"detail_photo",
+            "keyboard"=>[
+            "Buttons"=>[    
+                [
+                    "Columns"=>2,
+                    "Rows"=>2,
+                    "ActionType"=>"none",
+                    "ActionBody"=>"1",
+                    "Text"=>"<font color=#000000>фото</font>",
+                    "TextSize"=>"large",
+                    "TextVAlign"=>"middle",
+                    "TextHAlign"=>"middle",
+                ],
+                [
+                    "Columns"=>4,
+                    "Rows"=>2,
+                    "ActionType"=>"reply",
+                    "ActionBody"=>$ad->id,
+                    "Text"=>"<font color=#000000>подробно</font>",
+                    "TextSize"=>"large",
+                    "TextVAlign"=>"middle",
+                    "TextHAlign"=>"middle",
+                ]
+            ]
+        ]];
+
+        return $keyboard;
     }
 
     public function set_read_prop($f,$content){

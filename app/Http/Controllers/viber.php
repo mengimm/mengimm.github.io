@@ -8,6 +8,9 @@ use GuzzleHttp;
 use Response;
 use App\Vuser;
 use App\Ad;
+use App\Http\Controllers\ins_ad;
+use App\Http\Controllers\read_ad;
+use App\Http\Controllers\Keyboards;
 
 class viber extends Controller
 {
@@ -16,234 +19,9 @@ class viber extends Controller
     public $token='48380f53e9e7d686-355fd1effe2d68ee-c92301ccbfd6a9df';
     public $url='https://chatapi.viber.com/pa/set_webhook';
     public $url_send='https://chatapi.viber.com/pa/send_message';
-    public $host='https://e4a953919304.ngrok.io/api/bot';
-
-    public $action_keyboard=
-    [
-        "min_api_version"=>7,        
-            "Type"=>"keyboard",
-            "DefaultHeight"=>true,
-            "BgColor"=>"#FFFFFF",
-            "tracking_data"=>"action",
-            "keyboard"=>[
-            "Buttons"=>[    
-                [
-                    "Columns"=>3,
-                    "Rows"=>1,
-                    "ActionType"=>"reply",
-                    "ActionBody"=>"1",
-                    "Text"=>"<font color=#000000>Подать объявление</font>",
-                    "TextSize"=>"large",
-                    "TextVAlign"=>"middle",
-                    "TextHAlign"=>"middle",
-                ],
-                [
-                    "Columns"=>3,
-                    "Rows"=>1,
-                    "ActionType"=>"reply",
-                    "ActionBody"=>"2",
-                    "Text"=>"<font color=#000000>Смотреть объявления</font>",
-                    "TextSize"=>"large",
-                    "TextVAlign"=>"middle",
-                    "TextHAlign"=>"middle",
-                ]
-            ]
-        ]];
-
-        public $type_ad_keyboard=
-        [
-            "min_api_version"=>7,        
-                "Type"=>"keyboard",
-                "DefaultHeight"=>true,
-                "BgColor"=>"#FFFFFF",
-                "tracking_data"=>"type_ad",
-                "keyboard"=>[
-                "Buttons"=>[    
-                    [
-                        "Columns"=>6,
-                        "Rows"=>1,
-                        "ActionType"=>"reply",
-                        "ActionBody"=>"1",
-                        "Text"=>"<font color=#000000>Аренда</font>",
-                        "TextSize"=>"large",
-                        "TextVAlign"=>"middle",
-                        "TextHAlign"=>"middle",
-                    ],
-                    [
-                        "Columns"=>6,
-                        "Rows"=>1,
-                        "ActionType"=>"reply",
-                        "ActionBody"=>"2",
-                        "Text"=>"<font color=#000000>Продажа</font>",
-                        "TextSize"=>"large",
-                        "TextVAlign"=>"middle",
-                        "TextHAlign"=>"middle",
-                    ]
-                ]
-            ]];  
-
-    public $type_prop_keyboard=
-            [
-                "min_api_version"=>7,        
-                    "Type"=>"keyboard",
-                    "DefaultHeight"=>true,
-                    "BgColor"=>"#FFFFFF",
-                    "tracking_data"=>"type_prop",
-                    "keyboard"=>[
-                    "Buttons"=>[    
-                        [
-                            "Columns"=>6,
-                            "Rows"=>1,
-                            "ActionType"=>"reply",
-                            "ActionBody"=>"1",
-                            "Text"=>"<font color=#000000>Квартира</font>",
-                            "TextSize"=>"large",
-                            "TextVAlign"=>"middle",
-                            "TextHAlign"=>"middle",
-                        ],
-                        [
-                            "Columns"=>6,
-                            "Rows"=>1,
-                            "ActionType"=>"reply",
-                            "ActionBody"=>"2",
-                            "Text"=>"<font color=#000000>Гараж</font>",
-                            "TextSize"=>"large",
-                            "TextVAlign"=>"middle",
-                            "TextHAlign"=>"middle",
-                        ],
-                        [
-                            "Columns"=>6,
-                            "Rows"=>1,
-                            "ActionType"=>"reply",
-                            "ActionBody"=>"3",
-                            "Text"=>"<font color=#000000>Частный дом</font>",
-                            "TextSize"=>"large",
-                            "TextVAlign"=>"middle",
-                            "TextHAlign"=>"middle",
-                        ],
-                        [
-                            "Columns"=>6,
-                            "Rows"=>1,
-                            "ActionType"=>"reply",
-                            "ActionBody"=>"4",
-                            "Text"=>"<font color=#000000>Участок</font>",
-                            "TextSize"=>"large",
-                            "TextVAlign"=>"middle",
-                            "TextHAlign"=>"middle",
-                        ],
-                        [
-                            "Columns"=>6,
-                            "Rows"=>1,
-                            "ActionType"=>"reply",
-                            "ActionBody"=>"5",
-                            "Text"=>"<font color=#000000>Коммерческое</font>",
-                            "TextSize"=>"large",
-                            "TextVAlign"=>"middle",
-                            "TextHAlign"=>"middle",
-                        ]
-                    ]
-                ]];  
+    public $host='https://6db7b444f441.ngrok.io/api/bot';
 
 
-/*
-    [
-        "receiver":"01234567890A=",
-        "type"=>"text",
-        "text"=>"Hello world",
-        "keyboard"=>[
-           "Type"=>"keyboard",
-           "DefaultHeight"=>true,
-           "Buttons"=>[
-              [
-                 "ActionType"=>"location-picker",
-                 "ActionBody"=>"loc",
-                 "Text"=>"Key text",
-                 "TextSize"=>"regular"
-              ]
-           ]
-        ]
-     ]
-*/
-    public $location_keyboard=[        
-        "Type"=>"keyboard",
-        "min_api_version"=>7,        
-        "tracking_data"=>"location",
-        "keyboard"=>[
-           "DefaultHeight"=>true,
-           "Buttons"=>[
-              [
-                 "ActionType"=>"location-picker",
-                 "ActionBody"=>"loc",
-                 "Text"=>"Key text",
-                 "TextSize"=>"regular"
-              ]
-           ]
-        ]
-     ];
-
-     public $price_keyboard=[
-        "type"=>"text",
-        "text"=>"укажите стоимость в тыс.р. (например 3,5)",
-        "min_api_version"=>7,
-        "tracking_data"=>"price",        
-     ];
-
-     public $description_keyboard=[
-        "type"=>"text",
-        "text"=>"добавьте описание",
-        "min_api_version"=>7,
-        "tracking_data"=>"description",        
-     ];
-
-     public $photo_keyboard=[
-        "type"=>"text",
-        "text"=>"отправьте до 5ти фотографий объекта или нажмите завершить если не хотите опубликовать фото",
-        "min_api_version"=>7,        
-        "tracking_data"=>"photo1",
-        "keyboard"=>[
-           "DefaultHeight"=>true,
-           "Buttons"=>[
-              [
-                 "ActionType"=>"reply",
-                 "ActionBody"=>"end_photo",
-                 "Text"=>"завершить",
-                 "TextSize"=>"regular"
-              ]
-           ]
-        ]
-     ];     
-
-     public $publish_keyboard=
-    [
-        "min_api_version"=>7,        
-            "Type"=>"keyboard",
-            "DefaultHeight"=>true,
-            "BgColor"=>"#FFFFFF",
-            "tracking_data"=>"publish",
-            "keyboard"=>[
-            "Buttons"=>[    
-                [
-                    "Columns"=>3,
-                    "Rows"=>1,
-                    "ActionType"=>"reply",
-                    "ActionBody"=>"1",
-                    "Text"=>"<font color=#000000>Опубликовать</font>",
-                    "TextSize"=>"large",
-                    "TextVAlign"=>"middle",
-                    "TextHAlign"=>"middle",
-                ],
-                [
-                    "Columns"=>3,
-                    "Rows"=>1,
-                    "ActionType"=>"reply",
-                    "ActionBody"=>"2",
-                    "Text"=>"<font color=#000000>Отмена</font>",
-                    "TextSize"=>"large",
-                    "TextVAlign"=>"middle",
-                    "TextHAlign"=>"middle",
-                ]
-            ]
-        ]];
 
     public function get_vheaders(){
         return ['X-Viber-Auth-Token' => $this->token, 'Content-Type' => 'multipart/form-data' ];
@@ -279,41 +57,61 @@ class viber extends Controller
         return response()->json(["success"], 200);        
     }
 
+    public function home_menu($content){
+        $k=new Keyboards();
+        $vuser=$this->get_vuser($content);
+        $sender=$vuser->vid;
+        $kb=$k->action_keyboard;
+        $kb['tracking_data']='action';
+        $this->send_keyboard($sender,$kb);
+    }
+
     public function process($content){
         $vuser=$this->get_vuser($content);
+        $ins_ad=new ins_ad();
+        $read_ad=new read_ad();
+        $k=new Keyboards();
 
         if ($content["event"]=="subscribed"){
-            $vuser=$this->get_vuser($content);
-            $sender=$content["user"]["id"];            
-            $this->send_keyboard($sender,$this->action_keyboard);
+            $this->home_menu($content);            
             
-        }elseif ($content["event"]=="message"){            
-            $sender=$content["sender"]["id"];            
+        }elseif ($content["event"]=="message"){                                
+            try{
+                if($content['message']['text']=='home'){
+                    $this->home_menu($content);
+                }
+            }catch( \Exception $e){
+
+            }
+
+            $sender=$content["sender"]["id"];
             $td=$content['message']['tracking_data'];
-            //if ($td=='')
+
             $array=['ins_ad','read_ad','ins_rent','ins_sale','read_rent','read_sale'];
             //если сообщение с первым выбором
             if ($td=='action'){
-                if($content['message']['text']=='1'){                    
-                    $this->send_keyboard($sender,$this->type_ad_keyboard);
+                if($content['message']['text']=='1'){   
+                    $kb=$k->type_ad_keyboard;
+                    $kb['tracking_data']='type_ad';
+                    $this->send_keyboard($sender,$kb);
                 }elseif($content['message']['text']=='2'){
-                    $this->send_keyboard($sender,$this->choise_ad_keyboard);
+                    $kb=$k->type_ad_keyboard;
+                    $kb['tracking_data']='read_type_ad';
+                    $this->send_keyboard($sender,$kb);
                 }
-                $ad=$vuser->get_edit_ad();
-                $kb=$this->edit_ad($ad,$content);                
-                $this->send_keyboard($sender,$kb);
-                //если трекинг для подачи объявлений
+            //если трекинг для подачи объявлений
             }elseif (in_array($td,['type_ad','type_prop','location','price','photo1','photo2','photo3','photo4','photo5','description','publish'])){
                 $ad=$vuser->get_edit_ad();
-                $next_kb=$this->edit_ad($ad,$content);                
+                $next_kb=$ins_ad->edit_ad($ad,$content);
                 $res=$this->send_keyboard($sender,$next_kb);
-                //$p=$res->getBody();
-                //если трекинг для получение объявлений
-            }elseif(in_array($td,['get_ad','find_choise_ad','find_choise_type'])){
+            //если трекинг для настройки получение объявлений
+            }elseif(in_array($td,['read_type_ad','read_type_prop','set_prop'])){
                 $f=$vuser->get_findprop();
-                $kb=$this->set_read_prop($f,$content);
-                $res=$this->send_keyboard($sender,$kb);
-                //$p=$res->getBody();
+                $next_kb=$read_ad->set_prop_ad($vuser,$f,$content);
+                $res=$this->send_keyboard($sender,$next_kb);
+                //$f=$vuser->get_findprop();
+                //$kb=$k->set_read_prop($f,$content);
+                //$res=$this->send_keyboard($sender,$kb);
             }elseif($td=='page_'){
                 $this->get_ad($vuser,$td);
             }
@@ -337,66 +135,7 @@ class viber extends Controller
         }                
         return response()->json(['Success','viber bot'], 200);
     }
-
-    public function edit_ad($ad,$content){
-        //$a=$vuser->get_edit_ad();
-        //$id=$content['message']['id'];
-        //$id="NAI5XANdAmJLb0oeJ7gIaA==";
-
-        $td=$content['message']['tracking_data'];
-        if ($td=='type_ad'){
-            $ad->type=$content['message']['text'];
-            $kb=$this->type_prop_keyboard;
-        }elseif($td=='type_prop'){
-            $ad->prop_type=$content['message']['text'];
-            $kb=$this->location_keyboard;
-        }elseif($td=='location'){
-            $ad->lat=$content['message']['location']['lat'];
-            $ad->lon=$content['message']['location']['lon'];
-            $kb=$this->price_keyboard;
-        }elseif($td=='price'){
-            $ad->price=$content['message']['text'];
-            $kb=$this->photo_keyboard;
-        }elseif(in_array($td,['photo1','photo2','photo3','photo4','photo5'])){
-            if ($content['message']['type']=='picture'){
-                $kb=$this->photo_keyboard;
-                if ($td=='photo1'){
-                    $ad->photo1=$content['message']['media'];
-                    $kb['tracking_data']='photo2';
-                    $kb['text']="отправьте еще фото объекта или нажмите завершить";
-                }elseif($td=='photo2'){
-                    $ad->photo2=$content['message']['media'];
-                    $kb['tracking_data']='photo3';
-                    $kb['text']="отправьте еще фото объекта или нажмите завершить";
-                }elseif($td=='photo3'){
-                    $ad->photo3=$content['message']['media'];
-                    $kb['tracking_data']='photo4';
-                    $kb['text']="отправьте еще фото объекта или нажмите завершить";
-                }elseif($td=='photo4'){
-                    $ad->photo4=$content['message']['media'];
-                    $kb['tracking_data']='photo5';
-                    $kb['text']="отправьте еще фото объекта или нажмите завершить";
-                }elseif($td=='photo5'){
-                    $ad->photo5=$content['message']['media'];
-                    $kb=$this->description_keyboard;
-                }                                
-            }else{
-                $kb=$this->description_keyboard;                
-            }                                  
-        }elseif($td=='description'){
-            $ad->description=$content['message']['text'];
-            $kb=$this->publish_keyboard;
-        }elseif($td=='publish'){
-            if ($content['message']['text']=='1'){
-                $ad->status=1;
-                $ad->save();
-                $kb=$this->show_ad($content['sender']['id'],$ad);
-            }
-    }                        
-        $ad->save();        
-        return $kb;
-    }
-
+    
     public function show_ad($id,$ad){
     $keyboard=
     [
@@ -466,16 +205,6 @@ class viber extends Controller
             $u->save();
         }
         return $u;
-    }
-
-    public function get_ad($vuser,$page){
-        $f=$vuser->get_findprop();
-
-        $ads=Ad::where('status',1)
-                ->where('type',$f->type)
-                ->where('prop_type',$f->prop_type)
-                ->paginate(5,['*'],'page',$page);                
-        return $ads;
     }
 
     public function send_msg($id,$text){

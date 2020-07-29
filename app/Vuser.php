@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Ad;
 use App\Findprop;
 use App\Msg;
+use App\Listener;
 
 class Vuser extends Model
 {
@@ -19,6 +20,11 @@ class Vuser extends Model
     public function findprops()
     {
         return $this->hasMany(Findprop::class);
+    }
+
+    public function listeners()
+    {
+        return $this->hasMany(Listener::class);
     }
 
     public function get_edit_ad(){
@@ -63,4 +69,41 @@ class Vuser extends Model
         }
         
     }
+
+    public function make_listener($type,$type_prop){
+        //создать слушатели для всех
+        if ($type==0){
+            foreach([1,2] as $t){
+                foreach([1,2,3,4,5] as $tp){
+                $this->listen($t,$tp);
+                }
+            }
+        //создать слушатели для типов объектов
+        }elseif($type_prop==0){
+            foreach([1,2,3,4,5] as $tp){
+                $this->listen($type,$tp);
+            }
+        }else{
+        //создать слушатель
+            $this->listen($type,$type_prop);
+        }
+    }
+
+    public function listen($type,$type_prop){
+        try{
+            $l=$this->listeners()->where('type',$type)->where('type_prop',$type_prop)->first();
+        }catch( \Exception $e){
+            $l=null;
+        }
+        
+        if ($l==null){
+            $l=new Listener();
+            $l->type=$type;
+            $l->type_prop=$type_prop;            
+            $this->listeners()->save($l);
+        }
+        return $l;        
+    }
+
+
 }

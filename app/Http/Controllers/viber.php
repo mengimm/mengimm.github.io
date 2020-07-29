@@ -19,7 +19,7 @@ class viber extends Controller
     public $token='48380f53e9e7d686-355fd1effe2d68ee-c92301ccbfd6a9df';
     public $url='https://chatapi.viber.com/pa/set_webhook';
     public $url_send='https://chatapi.viber.com/pa/send_message';
-    public $host='https://a2760f0b49ff.ngrok.io';
+    public $host='https://b2b81474d3b1.ngrok.io';
 
 
 

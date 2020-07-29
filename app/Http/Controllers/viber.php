@@ -19,7 +19,7 @@ class viber extends Controller
     public $token='48380f53e9e7d686-355fd1effe2d68ee-c92301ccbfd6a9df';
     public $url='https://chatapi.viber.com/pa/set_webhook';
     public $url_send='https://chatapi.viber.com/pa/send_message';
-    public $host='https://6db7b444f441.ngrok.io/api/bot';
+    public $host='https://a2760f0b49ff.ngrok.io';
 
 
 
@@ -37,7 +37,7 @@ class viber extends Controller
 
         $client= new GuzzleHttp\Client();
         
-        $body = ['url'=>$this->host,
+        $body = ['url'=>$this->host.'/api/bot',
         'event_types' => ['unsubscribed', 'conversation_started', 'message', 'seen', 'delivered']];
         $res=$client->request('POST',$this->url,['headers' => $this->get_vheaders(), GuzzleHttp\RequestOptions::JSON => $body]);
         $b = $res->getBody();
@@ -96,6 +96,7 @@ class viber extends Controller
                     $this->send_keyboard($sender,$kb);
                 }elseif($content['message']['text']=='2'){
                     $kb=$k->type_ad_keyboard;
+                    $kb['keyboard']['Buttons']=array_merge($k->top_buttons,$kb['keyboard']['Buttons']);
                     $kb['tracking_data']='read_type_ad';
                     $this->send_keyboard($sender,$kb);
                 }
@@ -107,7 +108,7 @@ class viber extends Controller
             //если трекинг для настройки получение объявлений
             }elseif(in_array($td,['read_type_ad','read_type_prop','set_prop'])){
                 $f=$vuser->get_findprop();
-                $next_kb=$read_ad->set_prop_ad($vuser,$f,$content);
+                $next_kb=$read_ad->set_prop_ad($this->host,$vuser,$f,$content);
                 $res=$this->send_keyboard($sender,$next_kb);
                 //$f=$vuser->get_findprop();
                 //$kb=$k->set_read_prop($f,$content);
@@ -122,6 +123,9 @@ class viber extends Controller
     public function bot(Request $request){
         $content=$request->all();
         $event=$content['event'];
+
+        error_log('recieve event');
+
         //обрабатываем тип "сообщение"
 
         if ($event=='webhook'){
@@ -243,6 +247,7 @@ class viber extends Controller
         $body["receiver"]=$id;
         $res=$client->request('POST',$this->url_send,['headers' => $this->get_vheaders(), GuzzleHttp\RequestOptions::JSON => $body]);
         $b=$res->getBody();
+        error_log($b);
         return $b;
 
     }

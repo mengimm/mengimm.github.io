@@ -11,6 +11,7 @@ public $action_keyboard=
             "DefaultHeight"=>false,
             "BgColor"=>"#FFFFFF",            
             "keyboard"=>[
+            "InputFieldState"=>"hidden",
             "Buttons"=>[    
                 [
                     "Columns"=>3,
@@ -44,6 +45,7 @@ public $action_keyboard=
                 "DefaultHeight"=>false,
                 "BgColor"=>"#FFFFFF",
                 "keyboard"=>[
+                "InputFieldState"=>"hidden",
                 "Buttons"=>[    
                     [
                         "Columns"=>6,
@@ -77,6 +79,7 @@ public $action_keyboard=
                     "DefaultHeight"=>false,
                     "BgColor"=>"#FFFFFF",
                     "keyboard"=>[
+                    "InputFieldState"=>"hidden",
                     "Buttons"=>[    
                         [
                             "Columns"=>6,
@@ -142,6 +145,7 @@ public $action_keyboard=
         "min_api_version"=>7,
         "keyboard"=>[
            "DefaultHeight"=>false,
+           "InputFieldState"=>"hidden",
            "Buttons"=>[
               [
                  "ActionType"=>"location-picker",
@@ -171,7 +175,7 @@ public $action_keyboard=
         "text"=>"отправьте до 5ти фотографий объекта или нажмите не добавлять если не хотите опубликовать фото",
         "min_api_version"=>7,
         "keyboard"=>[
-           "DefaultHeight"=>false,
+           "DefaultHeight"=>false,           
            "Buttons"=>[
               [
                  "ActionType"=>"reply",
@@ -245,4 +249,41 @@ public $action_keyboard=
             "text"=>"ваше объявление размещена",
             "min_api_version"=>7
          ];
+
+        public $top_buttons=[
+            
+                [
+                    "Columns"=>1,
+                    "Rows"=>1,
+                    "ActionType"=>"reply",
+                    "ActionBody"=>"home",
+                    "Text"=>"<font color=#000000>o</font>",
+                    "TextSize"=>"large",
+                    "TextVAlign"=>"middle",
+                    "TextHAlign"=>"middle",
+                    "Silent"=>true,
+                ],
+                [
+                    "Columns"=>1,
+                    "Rows"=>1,
+                    "ActionType"=>"reply",
+                    "ActionBody"=>"prev",
+                    "Text"=>"<font color=#000000>^</font>",
+                    "TextSize"=>"large",
+                    "TextVAlign"=>"middle",
+                    "TextHAlign"=>"middle",
+                    "Silent"=>true,
+                ],
+                [
+                    "Columns"=>4,
+                    "Rows"=>1,
+                    "ActionType"=>"none",
+                    "ActionBody"=>"home",
+                    "Text"=>"<font color=#000000></font>",
+                    "TextSize"=>"large",
+                    "TextVAlign"=>"middle",
+                    "TextHAlign"=>"middle",
+                    "Silent"=>true,
+                ]
+                ];
     }

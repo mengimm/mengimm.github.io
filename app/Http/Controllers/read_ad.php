@@ -11,7 +11,7 @@ use App\Http\Controllers\Keyboards;
 
 class read_ad extends Controller
 {    
-    public function set_prop_ad($vuser,$f,$content){
+    public function set_prop_ad($host,$vuser,$f,$content){
          //$a=$vuser->get_edit_ad();
         //$id=$content['message']['id'];
         //$id="NAI5XANdAmJLb0oeJ7gIaA==";
@@ -19,14 +19,28 @@ class read_ad extends Controller
 
         $td=$content['message']['tracking_data'];
         if ($td=='read_type_ad'){
-            $f->type=$content['message']['text'];
-            $kb=$this->form_keyboard_type_ad($f->type);
-            $kb['tracking_data']='read_type_prop';
+            if ($content['message']['text']=='prev'){                
+                //$sender=$vuser->vid;
+                $kb=$k->action_keyboard;
+                $kb['tracking_data']='action';
+            }else{
+                $f->type=$content['message']['text'];
+                $kb=$this->form_keyboard_type_ad($f->type);
+                $kb['keyboard']['Buttons']=array_merge($k->top_buttons,$kb['keyboard']['Buttons']);
+                $kb['tracking_data']='read_type_prop';
+            }            
         }elseif($td=='read_type_prop'){
-            $f->prop_type=$content['message']['text'];
-            //$kb=$k->description_keyboard;
-            $kb=$this->keyboard_ad($vuser);
-            $kb['tracking_data']='set_prop';
+            if ($content['message']['text']=='prev'){
+                $kb=$k->type_ad_keyboard;
+                $kb['keyboard']['Buttons']=array_merge($k->top_buttons,$kb['keyboard']['Buttons']);
+                $kb['tracking_data']='read_type_ad';
+            }else{
+                $f->prop_type=$content['message']['text'];
+                $kb=$this->keyboard_ad($host,$vuser);
+                $kb['keyboard']['Buttons']=array_merge($k->top_buttons,$kb['keyboard']['Buttons']);
+                $kb['tracking_data']='set_prop';
+            }            
+            
         }elseif($td=='set_prop'){
             if ($content['message']['text']=='1'){
                 //$f->status=1;
@@ -34,6 +48,10 @@ class read_ad extends Controller
                 $kb=$this->keyboard_ad($vuser);
                 //$kb=$k->description_keyboard;                
                 //$kb=$k->show_ad($content['sender']['id'],$ad);
+            }elseif ($content['message']['text']=='prev'){
+                $kb=$this->form_keyboard_type_ad($f->type);
+                $kb['keyboard']['Buttons']=array_merge($k->top_buttons,$kb['keyboard']['Buttons']);
+                $kb['tracking_data']='read_type_prop';
             }
     }                        
         $f->save();        
@@ -65,9 +83,9 @@ class read_ad extends Controller
         return $kb;
     }
 
-    public function keyboard_ad($vuser){
+    public function keyboard_ad($host,$vuser){
         $ads=$this->get_ad($vuser);
-        return $this->form_keyboard_ad($ads);
+        return $this->form_keyboard_ad($host,$ads);
     }
 
     public function get_ad($vuser,$page=1){
@@ -76,40 +94,69 @@ class read_ad extends Controller
         $ads=Ad::where('status',1)
                 ->where('type',$f->type)
                 ->where('prop_type',$f->prop_type)
-                ->paginate(5,['*'],'page',$page);
+                ->paginate(10,['*'],'page',$page);
         return $ads;
     }
 
-    public function form_keyboard_ad($ads){
+    public function form_keyboard_ad($host,$ads){
+        $k=new Keyboards;
         $buttons=[];
         foreach ($ads as $ad){
-            $buttons=array_merge($buttons,$this->get_only_ad($ad));
+            $buttons=array_merge($buttons,$this->get_only_ad($host,$ad));
         }
-
+        //$top=$k->top_buttons;
+        /*$top=[
+            [
+            "Columns"=>1,
+            "Rows"=>1,
+            "ActionType"=>"none",
+            "ActionBody"=>"1",
+            "Text"=>"<font color=#000000>фото</font>",
+            "TextSize"=>"large",
+            "TextVAlign"=>"middle",
+            "TextHAlign"=>"middle",
+            ],
+            [],
+            [],
+            []
+            */        
         return [
             "min_api_version"=>7,        
                 "Type"=>"keyboard",
                 "DefaultHeight"=>true,
                 "BgColor"=>"#FFFFFF",
                 "keyboard"=>[
+                "InputFieldState"=>"hidden",
                 "Buttons"=>$buttons
             ]];
 
     }
 
-    public function get_only_ad($ad){
-        $buttons=
-        [
-                    [
-                        "Columns"=>2,
-                        "Rows"=>2,
-                        "ActionType"=>"none",
-                        "ActionBody"=>"1",
-                        "Text"=>"<font color=#000000>фото</font>",
-                        "TextSize"=>"large",
-                        "TextVAlign"=>"middle",
-                        "TextHAlign"=>"middle",
-                    ],
+    public function get_only_ad($host,$ad){
+        $buttons=[];
+        if ($ad->photo1==null){
+            $buttons[0]=[
+                "Columns"=>2,
+                "Rows"=>2,
+                "ActionType"=>"none",
+                "ActionBody"=>"1",
+                "Text"=>"<font color=#000000>фото</font>",
+                "TextSize"=>"large",
+                "TextVAlign"=>"middle",
+                "TextHAlign"=>"middle",
+            ];
+        }else{
+            $buttons[0]=
+            [
+                "Columns"=>2,
+                "Rows"=>2,
+                "ActionType"=>"none",
+                "ActionBody"=>"1",
+                "Image"=>$host.$ad->photo1,
+            ];
+        };
+
+        $buttons[1]=
                     [
                         "Columns"=>4,
                         "Rows"=>2,
@@ -119,8 +166,8 @@ class read_ad extends Controller
                         "TextSize"=>"large",
                         "TextVAlign"=>"middle",
                         "TextHAlign"=>"middle",
-                    ]
-            ];
+                    ];
+        
         return $buttons;
         }
 }

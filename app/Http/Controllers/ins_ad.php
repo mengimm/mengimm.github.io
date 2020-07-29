@@ -7,6 +7,7 @@ use Response;
 use App\Vuser;
 use App\Ad;
 use App\Http\Controllers\Keyboards;
+use Storage;
 
 class ins_ad extends Controller
 {    
@@ -34,32 +35,45 @@ class ins_ad extends Controller
             $kb['tracking_data']='price';
         }elseif($td=='price'){
             $ad->price=$content['message']['text'];
-            $kb=$k->publish_keyboard;
-            $kb['tracking_data']='publish';
+            $kb=$k->photo_keyboard;
+            $kb['tracking_data']='photo1';
         }elseif(in_array($td,['photo1','photo2','photo3','photo4','photo5'])){
             if ($content['message']['type']=='picture'){
+                $url=$content['message']['media'];
+                $contents=file_get_contents($url);                
                 $kb=$k->photo_keyboard;
+
+                $url_path='/storage/img/';
+                $name='img_ad_'.$ad->id;
+                //$url_path='';
+                //$name=$url;
                 if ($td=='photo1'){
-                    $ad->photo1=$content['message']['media'];
+                    $name=$name.'_1.jpg';                    
+                    $ad->photo1=$url_path.$name;
                     $kb['tracking_data']='photo2';
                     $kb['text']="отправьте еще фото объекта или нажмите завершить";
                 }elseif($td=='photo2'){
-                    $ad->photo2=$content['message']['media'];
+                    $name=$name.'_2.jpg';
+                    $ad->photo2=$url_path.$name;
                     $kb['tracking_data']='photo3';
                     $kb['text']="отправьте еще фото объекта или нажмите завершить";
                 }elseif($td=='photo3'){
-                    $ad->photo3=$content['message']['media'];
+                    $name=$name.'_3.jpg';
+                    $ad->photo3=$url_path.$name;
                     $kb['tracking_data']='photo4';
                     $kb['text']="отправьте еще фото объекта или нажмите завершить";
                 }elseif($td=='photo4'){
-                    $ad->photo4=$content['message']['media'];
+                    $name=$name.'_4.jpg';
+                    $ad->photo4=$url_path.$name;
                     $kb['tracking_data']='photo5';
                     $kb['text']="отправьте еще фото объекта или нажмите завершить";
                 }elseif($td=='photo5'){
-                    $ad->photo5=$content['message']['media'];
+                    $name=$name.'_5.jpg';
+                    $ad->photo5=$url_path.$name;
                     $kb=$k->description_keyboard;
                     $kb['tracking_data']='description';
-                }                                
+                }                
+                Storage::put('public'.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.$name,$contents);
             }else{
                 $kb=$k->description_keyboard;
                 $kb['tracking_data']='description';
